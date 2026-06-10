@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d9e75">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>LifeTrack</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css">
+<style>
+  :root{
+    --bg:#f5f4f0; --surface:#ffffff; --surface2:#efece5;
+    --text:#26241f; --text2:#6b685f; --text3:#9a978d;
+    --border:rgba(0,0,0,.10); --border2:rgba(0,0,0,.18);
+    --info-bg:#e1f5ee; --info:#0f6e56; --info-bd:#1d9e75;
+    --ok-bg:#eaf3de; --ok:#3b6d11;
+    --bad-bg:#fcebeb; --bad:#a32d2d;
+    --r-md:8px; --r-lg:12px;
+    --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#1a1916; --surface:#242220; --surface2:#2e2c28;
+      --text:#ece9e2; --text2:#a8a59c; --text3:#6f6c64;
+      --border:rgba(255,255,255,.12); --border2:rgba(255,255,255,.20);
+      --info-bg:#0f3a30; --info:#5dcaa5; --info-bd:#1d9e75;
+      --ok-bg:#1f3a10; --ok:#97c459;
+      --bad-bg:#3a1717; --bad:#f09595;
+    }
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--text);font-family:var(--font);}
+  body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);}
+  .lt-app{max-width:560px;margin:0 auto;padding:12px 14px 40px;}
+  .lt-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2px;}
+  .lt-logo{font-size:20px;font-weight:600;letter-spacing:-.3px;}
+  .lt-logo i{color:var(--info-bd);}
+  .lt-date{font-size:12px;color:var(--text3);margin:0 0 12px;}
+  .lt-tabs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 12px;}
+  .lt-tab{flex:0 0 auto;border:1px solid var(--border);background:var(--surface);border-radius:var(--r-lg);padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:6px;color:var(--text2);font-family:inherit;}
+  .lt-tab.active{border-color:var(--info-bd);color:var(--info);background:var(--info-bg);}
+  .lt-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;margin-bottom:12px;}
+  .lt-card h3{font-size:16px;font-weight:600;margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+  .lt-row{display:flex;gap:10px;margin-bottom:10px;}
+  .lt-field{flex:1;min-width:0;}
+  label{font-size:13px;color:var(--text2);display:block;margin-bottom:4px;}
+  input{width:100%;height:38px;padding:0 12px;font-size:15px;font-family:inherit;color:var(--text);background:var(--surface);border:1px solid var(--border2);border-radius:var(--r-md);}
+  input[readonly]{background:var(--surface2);color:var(--text2);}
+  input:focus{outline:none;border-color:var(--info-bd);box-shadow:0 0 0 3px var(--info-bg);}
+  button{font-family:inherit;}
+  .lt-btn{width:100%;height:40px;margin-top:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);border-radius:var(--r-md);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+  .lt-btn:active{transform:scale(.98);}
+  .lt-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:12px;}
+  .lt-metric{background:var(--surface2);border-radius:var(--r-md);padding:12px 14px;}
+  .lt-metric .lab{font-size:12px;color:var(--text2);margin:0;}
+  .lt-metric .val{font-size:22px;font-weight:600;margin:2px 0 0;}
+  .lt-metric .val small{font-size:13px;color:var(--text2);font-weight:400;}
+  .lt-list,.lt-cmp,.lt-lib{list-style:none;padding:0;margin:8px 0 0;}
+  .lt-list li{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:8px 0;border-top:1px solid var(--border);}
+  .lt-list .meta{color:var(--text2);font-size:12px;}
+  .lt-del{background:none;border:none;color:var(--bad);cursor:pointer;font-size:16px;padding:2px 6px;}
+  .lt-empty{font-size:13px;color:var(--text3);text-align:center;padding:16px 0;}
+  .lt-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;}
+  .lt-chip{border:1px solid var(--border2);background:var(--surface);color:var(--text);border-radius:var(--r-md);padding:8px 14px;font-size:14px;cursor:pointer;}
+  .lt-chip.sel{background:var(--info-bg);border-color:var(--info-bd);color:var(--info);}
+  .lt-hrs{display:flex;align-items:center;gap:12px;margin:4px 0;}
+  .lt-hrs input[type=range]{flex:1;}
+  .lt-hrs output{font-size:22px;font-weight:600;min-width:56px;}
+  .lt-hrs output small{font-size:13px;color:var(--text2);font-weight:400;}
+  .lt-seg{display:flex;gap:6px;margin-bottom:14px;}
+  .lt-seg button{flex:1;border:1px solid var(--border2);background:var(--surface);color:var(--text2);border-radius:var(--r-md);padding:9px;font-size:13px;cursor:pointer;}
+  .lt-seg button.sel{background:var(--info-bg);border-color:var(--info-bd);color:var(--info);}
+  .lt-calc{font-size:13px;color:var(--text2);margin:0 0 4px;}
+  .lt-calc b{color:var(--text);font-weight:600;}
+  .lt-cmp li{display:flex;align-items:center;justify-content:space-between;font-size:14px;padding:9px 0;border-top:1px solid var(--border);}
+  .lt-cmp li:first-child{border-top:none;}
+  .lt-cmp .name{font-weight:600;}
+  .lt-cmp .nums{display:flex;align-items:center;gap:10px;}
+  .lt-cmp .now{font-size:15px;font-weight:600;min-width:18px;text-align:right;}
+  .lt-cmp .prev{font-size:12px;color:var(--text3);}
+  .lt-delta{font-size:12px;padding:2px 8px;border-radius:var(--r-md);min-width:38px;text-align:center;}
+  .d-up{background:var(--ok-bg);color:var(--ok);}
+  .d-down{background:var(--bad-bg);color:var(--bad);}
+  .d-flat{background:var(--surface2);color:var(--text2);}
+  .lt-lib li{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;padding:9px 4px;border-top:1px solid var(--border);border-radius:var(--r-md);}
+  .lt-lib .ln{flex:1;min-width:0;cursor:pointer;}
+  .lt-lib .ln b{font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .lt-lib .ln span{color:var(--text2);font-size:12px;}
+  .lt-lib .lpick{color:var(--info);font-size:12px;white-space:nowrap;cursor:pointer;}
+  .lt-hint{font-size:12px;color:var(--text3);margin:6px 0 0;}
+  .lt-sel-food{background:var(--info-bg);border-radius:var(--r-md);padding:10px 12px;margin:10px 0;font-size:13px;color:var(--info);display:flex;justify-content:space-between;align-items:center;gap:8px;}
+  .lt-sel-food .lt-del{color:var(--info);}
+</style>
+</head>
+<body>
+<div class="lt-app">
+  <div class="lt-head"><span class="lt-logo"><i class="ti ti-activity-heartbeat"></i> LifeTrack</span></div>
+  <p class="lt-date" id="lt-today"></p>
+  <div class="lt-tabs" id="lt-tabs"></div>
+  <div id="lt-view"></div>
+</div>
+<script>
+(function(){
+  const TABS=[
+    {id:'home',icon:'ti-layout-dashboard',label:'Résumé'},
+    {id:'sleep',icon:'ti-moon',label:'Sommeil'},
+    {id:'gym',icon:'ti-barbell',label:'Salle'},
+    {id:'study',icon:'ti-book',label:'Études'},
+    {id:'food',icon:'ti-apple',label:'Nutrition'},
+  ];
+  const GYM_CATS=['Upper','Lower','Full body'];
+  const KEY='lifetrack:data';
+  let active='home';
+  let store={sleep:[],gym:[],study:[],food:[],foodLib:[]};
+
+  const view=document.getElementById('lt-view');
+  const tabsEl=document.getElementById('lt-tabs');
+  const now=new Date();
+  const today=now.toISOString().slice(0,10);
+  document.getElementById('lt-today').textContent=now.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+
+  function mondayOf(d){const x=new Date(d+'T00:00:00');const day=(x.getDay()+6)%7;x.setDate(x.getDate()-day);return x.toISOString().slice(0,10);}
+  const thisWeek=mondayOf(today);
+  const lastWeek=(()=>{const x=new Date(thisWeek+'T00:00:00');x.setDate(x.getDate()-7);return x.toISOString().slice(0,10);})();
+  function inWeek(date,ws0){const ws=new Date(ws0+'T00:00:00'),we=new Date(ws);we.setDate(we.getDate()+7);const d=new Date(date+'T00:00:00');return d>=ws&&d<we;}
+
+  function load(){try{const r=localStorage.getItem(KEY);if(r)store=Object.assign(store,JSON.parse(r));}catch(e){}if(!Array.isArray(store.foodLib))store.foodLib=[];render();}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(store));}catch(e){console.error(e);}}
+
+  const esc=s=>String(s).replace(/[<>&"]/g,c=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[c]));
+  const r1=n=>Math.round(n*10)/10;
+  const todayItems=arr=>arr.filter(x=>x.date===today);
+  function deltaBadge(nw,prev){const d=nw-prev;if(d>0)return `<span class="lt-delta d-up">+${r1(d)}</span>`;if(d<0)return `<span class="lt-delta d-down">${r1(d)}</span>`;return `<span class="lt-delta d-flat">=</span>`;}
+
+  function renderTabs(){
+    tabsEl.innerHTML=TABS.map(t=>`<button class="lt-tab ${t.id===active?'active':''}" data-tab="${t.id}"><i class="ti ${t.icon}"></i>${t.label}</button>`).join('');
+    tabsEl.querySelectorAll('.lt-tab').forEach(b=>b.onclick=()=>{active=b.dataset.tab;render();});
+  }
+  function fmtDate(d){return d===today?"Aujourd'hui":new Date(d+'T00:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'short'});}
+
+  function home(){
+    const lastSleep=store.sleep[store.sleep.length-1];
+    const g=todayItems(store.gym).length;
+    const st=todayItems(store.study).reduce((a,x)=>a+(+x.minutes||0),0);
+    const f=todayItems(store.food);
+    const kcal=f.reduce((a,x)=>a+(+x.kcal||0),0);
+    const prot=f.reduce((a,x)=>a+(+x.protein||0),0);
+    return `
+      <div class="lt-metrics">
+        <div class="lt-metric"><p class="lab">Sommeil (dernier)</p><p class="val">${lastSleep?r1(lastSleep.hours):'—'} <small>h</small></p></div>
+        <div class="lt-metric"><p class="lab">Séances aujourd'hui</p><p class="val">${g}</p></div>
+        <div class="lt-metric"><p class="lab">Études aujourd'hui</p><p class="val">${st} <small>min</small></p></div>
+        <div class="lt-metric"><p class="lab">Protéines</p><p class="val">${Math.round(prot)} <small>g</small></p></div>
+      </div>
+      <div class="lt-card"><h3><i class="ti ti-flame"></i>Nutrition du jour</h3>
+        <div class="lt-metrics" style="margin:0">
+          <div class="lt-metric"><p class="lab">Calories</p><p class="val">${Math.round(kcal)} <small>kcal</small></p></div>
+          <div class="lt-metric"><p class="lab">Repas loggés</p><p class="val">${f.length}</p></div>
+        </div></div>
+      <div class="lt-card"><h3><i class="ti ti-history"></i>Activité récente</h3>${recentFeed()}</div>`;
+  }
+  function recentFeed(){
+    const all=[
+      ...store.sleep.map(x=>({d:x.date,t:`Sommeil ${r1(x.hours)}h${x.quality?` · qualité ${x.quality}/5`:''}`,i:'ti-moon'})),
+      ...store.gym.map(x=>({d:x.date,t:`Salle · ${esc(x.cat||x.type||'séance')}${x.duration?` ${x.duration}min`:''}`,i:'ti-barbell'})),
+      ...store.study.map(x=>({d:x.date,t:`Études · ${esc(x.subject||'révisions')} ${x.minutes}min`,i:'ti-book'})),
+      ...store.food.map(x=>({d:x.date,t:`${esc(x.name)} · ${Math.round(x.kcal||0)}kcal`,i:'ti-apple'})),
+    ].slice(-40).reverse().slice(0,8);
+    if(!all.length)return `<p class="lt-empty">Rien encore. Commence par logger quelque chose.</p>`;
+    return `<ul class="lt-list">${all.map(x=>`<li><span><i class="ti ${x.i}" style="font-size:15px;vertical-align:-2px;margin-right:8px;color:var(--text2)"></i>${x.t}</span><span class="meta">${fmtDate(x.d)}</span></li>`).join('')}</ul>`;
+  }
+
+  let sleepQ=0,sleepH=8,sleepMode='times';
+  function calcHours(bed,wake){if(!bed||!wake)return null;const [bh,bm]=bed.split(':').map(Number),[wh,wm]=wake.split(':').map(Number);let h=(wh*60+wm)-(bh*60+bm);if(h<=0)h+=1440;return h/60;}
+  function weekSleep(ws){const arr=store.sleep.filter(x=>inWeek(x.date,ws));if(!arr.length)return{avg:0,n:0};return{avg:arr.reduce((a,x)=>a+x.hours,0)/arr.length,n:arr.length};}
+  function sleepStatsCard(){
+    const tw=weekSleep(thisWeek),lw=weekSleep(lastWeek);
+    return `<div class="lt-card"><h3><i class="ti ti-chart-line"></i>Moyenne hebdo</h3>
+      <div class="lt-metrics" style="margin-bottom:8px">
+        <div class="lt-metric"><p class="lab">Cette semaine</p><p class="val">${tw.n?r1(tw.avg):'—'} <small>h/nuit</small></p></div>
+        <div class="lt-metric"><p class="lab">Semaine dernière</p><p class="val">${lw.n?r1(lw.avg):'—'} <small>h/nuit</small></p></div>
+      </div>
+      <ul class="lt-cmp">
+        <li><span class="name">Évolution</span><span class="nums">${tw.n&&lw.n?deltaBadge(r1(tw.avg),r1(lw.avg))+'<span class="prev">vs sem. dernière</span>':'<span class="prev">Pas encore comparable</span>'}</span></li>
+        <li><span class="name">Nuits loggées</span><span class="nums"><span class="now">${tw.n}</span><span class="prev">contre ${lw.n}</span></span></li>
+      </ul></div>`;
+  }
+  function sleep(){
+    const modeUI=sleepMode==='times'?`
+      <div class="lt-row">
+        <div class="lt-field"><label>Au lit à</label><input type="time" id="s-bed" value="23:00"></div>
+        <div class="lt-field"><label>Réveil à</label><input type="time" id="s-wake" value="07:00"></div>
+      </div><p class="lt-calc" id="s-calc">Durée : <b>8h</b></p>`:`
+      <label>Heures dormies (estimation)</label>
+      <div class="lt-hrs"><input type="range" id="s-h" min="0" max="14" step="0.5" value="${sleepH}"><output id="s-hout">${r1(sleepH)} <small>h</small></output></div>`;
+    return `<div class="lt-card"><h3><i class="ti ti-moon"></i>Logger une nuit</h3>
+      <div class="lt-seg"><button data-mode="times" class="${sleepMode==='times'?'sel':''}">Heures coucher/réveil</button><button data-mode="estimate" class="${sleepMode==='estimate'?'sel':''}">Estimation rapide</button></div>
+      ${modeUI}
+      <label style="margin-top:8px">Qualité ressentie</label>
+      <div class="lt-chips" id="s-qual">${[1,2,3,4,5].map(n=>`<button class="lt-chip ${n===sleepQ?'sel':''}" data-q="${n}">${n}</button>`).join('')}</div>
+      <button class="lt-btn" id="s-add" style="margin-top:14px"><i class="ti ti-plus"></i> Ajouter</button></div>
+      ${sleepStatsCard()}
+      ${listCard('sleep',x=>`${r1(x.hours)}h${x.bed?` (${x.bed}→${x.wake})`:''}${x.quality?` · ${x.quality}/5`:''}`)}`;
+  }
+
+  let gymCat='Upper';
+  function weekGym(ws){const arr=store.gym.filter(x=>inWeek(x.date,ws));const out={total:arr.length,minutes:arr.reduce((a,x)=>a+(+x.duration||0),0),cats:{}};GYM_CATS.forEach(c=>out.cats[c]=0);arr.forEach(x=>{const c=x.cat||'Full body';out.cats[c]=(out.cats[c]||0)+1;});return out;}
+  function gymStatsCard(){
+    const tw=weekGym(thisWeek),lw=weekGym(lastWeek);
+    const rows=GYM_CATS.map(c=>`<li><span class="name">${c}</span><span class="nums"><span class="now">${tw.cats[c]}</span><span class="prev">sem. dern. ${lw.cats[c]}</span>${deltaBadge(tw.cats[c],lw.cats[c])}</span></li>`).join('');
+    return `<div class="lt-card"><h3><i class="ti ti-chart-bar"></i>Cette semaine vs dernière</h3>
+      <div class="lt-metrics" style="margin-bottom:10px">
+        <div class="lt-metric"><p class="lab">Séances</p><p class="val">${tw.total} <small>(${lw.total} av.)</small></p></div>
+        <div class="lt-metric"><p class="lab">Temps total</p><p class="val">${tw.minutes} <small>min</small></p></div>
+      </div>
+      <ul class="lt-cmp">${rows}
+        <li><span class="name">Temps total</span><span class="nums"><span class="now">${tw.minutes}m</span><span class="prev">sem. dern. ${lw.minutes}m</span>${deltaBadge(tw.minutes,lw.minutes)}</span></li>
+      </ul></div>`;
+  }
+  function gym(){
+    return `<div class="lt-card"><h3><i class="ti ti-barbell"></i>Logger une séance</h3>
+      <label>Catégorie</label>
+      <div class="lt-chips" id="g-cat">${GYM_CATS.map(c=>`<button class="lt-chip ${c===gymCat?'sel':''}" data-cat="${c}">${c}</button>`).join('')}</div>
+      <div class="lt-row" style="margin-top:10px">
+        <div class="lt-field"><label>Durée (min)</label><input id="g-dur" type="number" inputmode="numeric" placeholder="60"></div>
+        <div class="lt-field"><label>Note / PR</label><input id="g-note" placeholder="dév. couché 60kg x8"></div>
+      </div>
+      <button class="lt-btn" id="g-add"><i class="ti ti-plus"></i> Ajouter</button></div>
+      ${gymStatsCard()}
+      ${listCard('gym',x=>`${esc(x.cat||x.type||'séance')}${x.duration?` · ${x.duration}min`:''}${x.note?` · ${esc(x.note)}`:''}`)}`;
+  }
+
+  function weekStudy(ws){const arr=store.study.filter(x=>inWeek(x.date,ws));return{minutes:arr.reduce((a,x)=>a+(+x.minutes||0),0),n:arr.length};}
+  function studyStatsCard(){
+    const tw=weekStudy(thisWeek),lw=weekStudy(lastWeek);
+    return `<div class="lt-card"><h3><i class="ti ti-chart-bar"></i>Cette semaine vs dernière</h3>
+      <ul class="lt-cmp">
+        <li><span class="name">Temps total</span><span class="nums"><span class="now">${tw.minutes}m</span><span class="prev">sem. dern. ${lw.minutes}m</span>${deltaBadge(tw.minutes,lw.minutes)}</span></li>
+        <li><span class="name">Sessions</span><span class="nums"><span class="now">${tw.n}</span><span class="prev">sem. dern. ${lw.n}</span>${deltaBadge(tw.n,lw.n)}</span></li>
+      </ul></div>`;
+  }
+  function study(){
+    return `<div class="lt-card"><h3><i class="ti ti-book"></i>Logger une session</h3>
+      <div class="lt-row">
+        <div class="lt-field"><label>Matière</label><input id="t-subj" placeholder="Maths / Info / Physique…"></div>
+        <div class="lt-field" style="flex:0 0 100px"><label>Minutes</label><input id="t-min" type="number" inputmode="numeric" placeholder="45"></div>
+      </div>
+      <button class="lt-btn" id="t-add"><i class="ti ti-plus"></i> Ajouter</button></div>
+      ${studyStatsCard()}
+      ${listCard('study',x=>`${esc(x.subject||'révisions')} · ${x.minutes}min`)}`;
+  }
+
+  let selFood=null,foodQty=100,libFilter='';
+  function food(){
+    const f=todayItems(store.food);
+    const kcal=f.reduce((a,x)=>a+(+x.kcal||0),0);
+    const prot=f.reduce((a,x)=>a+(+x.protein||0),0);
+    const lib=store.foodLib.map((x,i)=>({...x,_i:i})).filter(x=>!libFilter||x.name.toLowerCase().includes(libFilter.toLowerCase())).sort((a,b)=>a.name.localeCompare(b.name));
+    const libUI=store.foodLib.length===0
+      ?`<p class="lt-empty">Ta bibliothèque est vide. Ajoute ton premier aliment ci-dessous (valeurs pour 100g) — il sera mémorisé.</p>`
+      :`<input id="f-filter" placeholder="Filtrer mes aliments…" value="${esc(libFilter)}" style="margin-bottom:4px">
+        <ul class="lt-lib">${lib.map(x=>`<li><span class="ln" data-pick="${x._i}"><b>${esc(x.name)}</b><span>${Math.round(x.kcal100)} kcal · ${r1(x.prot100)}g prot / 100g</span></span><span class="lpick" data-pick="${x._i}">Utiliser</span><button class="lt-del" data-libdel="${x._i}" aria-label="Supprimer"><i class="ti ti-trash"></i></button></li>`).join('')}</ul>`;
+    let selUI='';
+    if(selFood!=null&&store.foodLib[selFood]){
+      const sf=store.foodLib[selFood];
+      selUI=`<div class="lt-sel-food"><span><b>${esc(sf.name)}</b> · ${Math.round(sf.kcal100)}kcal / ${r1(sf.prot100)}g / 100g</span><button class="lt-del" id="f-clear" aria-label="Retirer"><i class="ti ti-x"></i></button></div>
+        <div class="lt-row"><div class="lt-field"><label>Quantité (g)</label><input id="f-qty" type="number" inputmode="numeric" value="${foodQty}"></div><div class="lt-field"><label>= calculé</label><input id="f-calc" value="${Math.round(sf.kcal100*foodQty/100)} kcal · ${r1(sf.prot100*foodQty/100)}g" readonly></div></div>
+        <button class="lt-btn" id="f-add-sel"><i class="ti ti-plus"></i> Ajouter au journal</button>`;
+    }
+    return `<div class="lt-metrics">
+        <div class="lt-metric"><p class="lab">Calories du jour</p><p class="val">${Math.round(kcal)} <small>kcal</small></p></div>
+        <div class="lt-metric"><p class="lab">Protéines du jour</p><p class="val">${Math.round(prot)} <small>g</small></p></div>
+      </div>
+      <div class="lt-card"><h3><i class="ti ti-books"></i>Mes aliments</h3>${libUI}${selUI}</div>
+      <div class="lt-card"><h3><i class="ti ti-plus"></i>Nouvel aliment (mémorisé)</h3>
+        <div class="lt-row"><div class="lt-field"><label>Nom</label><input id="nf-name" placeholder="Flocons d'avoine"></div></div>
+        <div class="lt-row"><div class="lt-field"><label>Kcal / 100g</label><input id="nf-kcal" type="number" inputmode="numeric" placeholder="389"></div><div class="lt-field"><label>Protéines / 100g</label><input id="nf-prot" type="number" inputmode="numeric" placeholder="13"></div></div>
+        <button class="lt-btn" id="nf-add"><i class="ti ti-bookmark"></i> Enregistrer dans ma bibliothèque</button>
+        <p class="lt-hint">Valeurs pour 100g (au dos de l'emballage). Réutilisable d'un clic ensuite.</p></div>
+      <div class="lt-card"><h3><i class="ti ti-edit"></i>Ajout ponctuel (non mémorisé)</h3>
+        <div class="lt-row"><div class="lt-field"><label>Aliment / repas</label><input id="f-name" placeholder="Repas resto"></div></div>
+        <div class="lt-row"><div class="lt-field"><label>Calories</label><input id="f-kcal" type="number" inputmode="numeric" placeholder="650"></div><div class="lt-field"><label>Protéines (g)</label><input id="f-prot" type="number" inputmode="numeric" placeholder="40"></div></div>
+        <button class="lt-btn" id="f-add"><i class="ti ti-plus"></i> Ajouter</button></div>
+      ${listCard('food',x=>`${esc(x.name)} · ${Math.round(x.kcal||0)}kcal · ${Math.round(x.protein||0)}g prot`)}`;
+  }
+
+  function listCard(key,fmt){
+    const items=store[key].slice().reverse();
+    const body=items.length?`<ul class="lt-list">${items.map((x,ri)=>{const idx=store[key].length-1-ri;return `<li><span>${fmt(x)}</span><span style="display:flex;align-items:center;gap:8px"><span class="meta">${fmtDate(x.date)}</span><button class="lt-del" data-key="${key}" data-idx="${idx}" aria-label="Supprimer"><i class="ti ti-trash"></i></button></span></li>`;}).join('')}</ul>`:`<p class="lt-empty">Aucune entrée pour l'instant.</p>`;
+    return `<div class="lt-card"><h3><i class="ti ti-list"></i>Historique</h3>${body}</div>`;
+  }
+
+  function bind(){
+    view.querySelectorAll('.lt-del[data-key]').forEach(b=>b.onclick=()=>{store[b.dataset.key].splice(+b.dataset.idx,1);save();render();});
+    if(active==='sleep'){
+      view.querySelectorAll('.lt-seg button').forEach(b=>b.onclick=()=>{sleepMode=b.dataset.mode;render();});
+      view.querySelectorAll('#s-qual .lt-chip').forEach(c=>c.onclick=()=>{sleepQ=+c.dataset.q;render();});
+      if(sleepMode==='times'){const upd=()=>{const h=calcHours(view.querySelector('#s-bed').value,view.querySelector('#s-wake').value);view.querySelector('#s-calc').innerHTML=`Durée : <b>${h!=null?r1(h)+'h':'—'}</b>`;};view.querySelector('#s-bed').oninput=upd;view.querySelector('#s-wake').oninput=upd;}
+      else{const sl=view.querySelector('#s-h');sl.oninput=()=>{sleepH=+sl.value;view.querySelector('#s-hout').innerHTML=`${r1(sleepH)} <small>h</small>`;};}
+      view.querySelector('#s-add').onclick=()=>{let e;if(sleepMode==='times'){const bed=view.querySelector('#s-bed').value,wake=view.querySelector('#s-wake').value;const h=calcHours(bed,wake);if(h==null)return;e={date:today,hours:r1(h),bed,wake,quality:sleepQ||null};}else{e={date:today,hours:r1(sleepH),quality:sleepQ||null};}store.sleep.push(e);sleepQ=0;sleepH=8;save();render();};
+    }
+    if(active==='gym'){
+      view.querySelectorAll('#g-cat .lt-chip').forEach(c=>c.onclick=()=>{gymCat=c.dataset.cat;render();});
+      view.querySelector('#g-add').onclick=()=>{const duration=+view.querySelector('#g-dur').value||null;const note=view.querySelector('#g-note').value.trim();store.gym.push({date:today,cat:gymCat,duration,note});save();render();};
+    }
+    if(active==='study'){
+      view.querySelector('#t-add').onclick=()=>{const subject=view.querySelector('#t-subj').value.trim();const minutes=+view.querySelector('#t-min').value||0;if(!minutes)return;store.study.push({date:today,subject,minutes});save();render();};
+    }
+    if(active==='food'){
+      const filt=view.querySelector('#f-filter');
+      if(filt)filt.oninput=()=>{libFilter=filt.value;const v=filt.value;render();const f2=view.querySelector('#f-filter');if(f2){f2.focus();f2.setSelectionRange(v.length,v.length);}};
+      view.querySelectorAll('[data-pick]').forEach(el=>el.onclick=()=>{selFood=+el.dataset.pick;foodQty=100;render();});
+      view.querySelectorAll('[data-libdel]').forEach(el=>el.onclick=(e)=>{e.stopPropagation();const i=+el.dataset.libdel;store.foodLib.splice(i,1);if(selFood===i)selFood=null;else if(selFood>i)selFood--;save();render();});
+      if(selFood!=null&&store.foodLib[selFood]){const sf=store.foodLib[selFood];const qty=view.querySelector('#f-qty');qty.oninput=()=>{foodQty=+qty.value||0;view.querySelector('#f-calc').value=`${Math.round(sf.kcal100*foodQty/100)} kcal · ${r1(sf.prot100*foodQty/100)}g`;};view.querySelector('#f-clear').onclick=()=>{selFood=null;render();};view.querySelector('#f-add-sel').onclick=()=>{if(!foodQty)return;store.food.push({date:today,name:`${sf.name} (${foodQty}g)`,kcal:Math.round(sf.kcal100*foodQty/100),protein:r1(sf.prot100*foodQty/100)});selFood=null;foodQty=100;save();render();};}
+      view.querySelector('#nf-add').onclick=()=>{const name=view.querySelector('#nf-name').value.trim();const k=+view.querySelector('#nf-kcal').value;const p=+view.querySelector('#nf-prot').value;if(!name||isNaN(k)||isNaN(p))return;store.foodLib.push({name,kcal100:k,prot100:p});save();render();};
+      view.querySelector('#f-add').onclick=()=>{const name=view.querySelector('#f-name').value.trim();if(!name)return;store.food.push({date:today,name,kcal:+view.querySelector('#f-kcal').value||0,protein:+view.querySelector('#f-prot').value||0});save();render();};
+    }
+  }
+
+  function render(){renderTabs();view.innerHTML=({home,sleep,gym,study,food})[active]();bind();}
+  load();
+})();
+</script>
+</body>
+</html>
